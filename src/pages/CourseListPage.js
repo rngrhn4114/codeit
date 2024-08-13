@@ -6,12 +6,20 @@ import { getCourses } from "../api";
 import styles from "./CourseListPage.module.css";
 import searchBarStyles from "../components/SearchBar.module.css";
 import searchIcon from "../assets/search.svg";
+import { useSearchParams } from "react-router-dom";
 
 function CourseListPage() {
-  const [keyword, setKeyword] = useState("");
-  const courses = getCourses();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initKeyword = searchParams.get("keyword");
+  const [keyword, setKeyword] = useState(initKeyword || "");
+  const courses = getCourses(initKeyword);
 
   const handleKeywordChange = (e) => setKeyword(e.target.value);
+
+  const handelSubmit = (e) => {
+    e.preventDefault();
+    setSearchParams(keyword ? { keyword } : {});
+  };
 
   return (
     <ListPage
@@ -19,7 +27,7 @@ function CourseListPage() {
       title="모든 코스"
       description="자체 제작된 코스들로 기초를 쌓으세요."
     >
-      <form className={searchBarStyles.form}>
+      <form className={searchBarStyles.form} onSubmit={handelSubmit}>
         <input
           name="keyword"
           value={keyword}
